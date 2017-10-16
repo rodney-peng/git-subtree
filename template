@@ -2,32 +2,40 @@
 # Usage:
 #
 #        [branch=] [annotate=] template split [args]
+#        [message=]            template merge [args] <commit>
 #
-#        [remote=] [branch=] template add [args]
-#        [remote=] [branch=] template pull [args]
+#        [remote=] [branch=]            template add  [args]
+#        [remote=] [branch=] [message=] template pull [args]
+#        [remote=] [branch=]            template push [args]
+#
+#        branch=- template add [args] <commit>
 #
 # To debug, set shell_cmd=echo to print the resulting command:
 #
-#        shell_cmd=echo template <command> <args>
+#        shell_cmd=echo template <command> [args]
 #
 
-default_remote="url_remote_repository"
+default_remote='url_remote_repository'
 
 # the <name> is used to identify the subtree branch and the commit among subtrees from the same repository
 # it must be identical to the name used at remote
 subtree_name='<name>'
 
 # the subtree_prefixes may diff for the remote and the local
-subtree_prefix="path/to/subtree"
+subtree_prefix='path/to/subtree'
 
 # remote repository for the subtree
 subtree_remote=${remote:-"$default_remote"}
 
 # branch for the subtree, the default branch name is prefixed with 'subtree-'
 subtree_branch=${branch:-"subtree-$subtree_name"}
+# use branch=- to disable default split branch or remote ref
+subtree_branch=${subtree_branch#-}
 
-# commit message prefix for split, make it identical for each split, means for template-remote only
+# commit message prefix for split, make it identical for each split
 subtree_annotate=${annotate:-"$subtree_name: "}
+# use annotate=- to disable default split annotation
+subtree_annotate=${subtree_annotate#-}
 
 subtree_cmd="$1"
 [ -z "$subtree_cmd" ] && exit
@@ -53,12 +61,16 @@ else
 fi
 
 if [ "$subtree_cmd" = "pull" ]; then
-  merge_msg="-m 'subtree pull: $subtree_prefix'"
+  merge_msg=${message:-"subtree pull: $subtree_prefix"}
 fi
 
 if [ "$subtree_cmd" = "merge" ]; then
-  merge_msg="-m 'subtree merge: $subtree_prefix'"
+  merge_msg=${message:-"subtree merge: $subtree_prefix"}
 fi
+
+# use message=- to disable default merge message
+merge_msg=${merge_msg#-}
+merge_msg=${merge_msg:+"-m '$merge_msg'"}
 
 # $subtree_prefix holds the prefix until here
 [ -z "$subtree_prefix" ] && exit
