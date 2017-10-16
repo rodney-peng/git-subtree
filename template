@@ -1,1 +1,1 @@
-name= prefix= remote= . $(dirname 0)/git-subtree $@
+name= prefix= remote= . $(dirname 0)/git-subtree.sh $@
