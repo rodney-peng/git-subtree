@@ -1,9 +1,2 @@
-if [ "$1" = "pull" ]; then
-  pull_squash="pull --squash"
-  shift
-else
-  pull_squash=
-fi
-
 name=git-subtree prefix=git-subtree remote=https://192.168.32.11/rodney/git-subtree.git branch=master \
- . "$(dirname $0)/git-subtree.sh" $pull_squash $@
+ . "$(dirname $0)/git-subtree.sh" $@

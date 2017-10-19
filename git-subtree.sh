@@ -60,6 +60,14 @@ fi
 
 if [ "$subtree_cmd" = "pull" ]; then
   merge_msg=${message:-"subtree pull: $subtree_prefix"}
+  if [ -z "$squash" ]; then
+    squash=--squash
+  else
+    # use squash=- to disable it
+    squash=
+  fi
+else
+  squash=
 fi
 
 if [ "$subtree_cmd" = "merge" ]; then
@@ -75,4 +83,4 @@ merge_msg=${merge_msg:+"-m '$merge_msg'"}
 subtree_prefix="-P '$subtree_prefix'"
 
 # won't work without eval if the subtree_prefix has '-', e.g. 'linux-3.18.x'
-${shell_cmd:-eval} git subtree $subtree_cmd $subtree_prefix $split_branch $split_annotate $merge_msg $@ $remote_ref
+${shell_cmd:-eval} git subtree $subtree_cmd $subtree_prefix $split_branch $split_annotate $merge_msg $squash $@ $remote_ref
